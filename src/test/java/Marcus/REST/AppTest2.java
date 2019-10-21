@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.opentest4j.AssertionFailedError;
+
+import io.restassured.http.Header;
 
 class AppTest2 {
 
@@ -103,4 +107,16 @@ class AppTest2 {
 	        body("MRData.CircuitTable.Circuits.Location[0].country",equalTo("Australia")).extract().asString();
 	    
 	 System.out.println(aResponseString);
-}}
+}
+	
+	@Test
+	public void testGraphQL() throws MalformedURLException {
+	    String actual = given()
+	                                    .header(new Header("Content-type", "application/json"))
+	                                    .body("{\"query\":\"{\\n Country(id: \\\"us\\\") {\\n name\\n situation\\n }\\n}\\n \"}")
+	                                .post(new URL("https://portal.ehri-project.eu/api/graphql"))
+	                                .jsonPath().getString("data.Country.name");
+	    Assertions.assertEquals(actual, "United Sttates");
+	}
+
+}
