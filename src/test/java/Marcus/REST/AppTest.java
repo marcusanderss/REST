@@ -110,13 +110,23 @@ class AppTest {
 }
 	
 	@Test
-	public void testGraphQL() throws MalformedURLException {
+	public void testGraphQL_InCorrectCountry() throws MalformedURLException {
 	    String actual = given()
 	                                    .header(new Header("Content-type", "application/json"))
 	                                    .body("{\"query\":\"{\\n Country(id: \\\"us\\\") {\\n name\\n situation\\n }\\n}\\n \"}")
 	                                .post(new URL("https://portal.ehri-project.eu/api/graphql"))
 	                                .jsonPath().getString("data.Country.name");
-	    Assertions.assertEquals(actual, "United Sttates");
+	    Assertions.assertNotEquals(actual, "United Sttates");
+	}
+	
+	@Test
+	public void testGraphQL_CorrectCountry() throws MalformedURLException {
+	    String actual = given()
+	                                    .header(new Header("Content-type", "application/json"))
+	                                    .body("{\"query\":\"{\\n Country(id: \\\"us\\\") {\\n name\\n situation\\n }\\n}\\n \"}")
+	                                .post(new URL("https://portal.ehri-project.eu/api/graphql"))
+	                                .jsonPath().getString("data.Country.name");
+	    Assertions.assertEquals(actual, "United States");
 	}
 
 }
